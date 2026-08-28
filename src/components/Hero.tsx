@@ -185,7 +185,7 @@ export function Hero() {
             Consolidation, reporting, AI insights and financial operations in one intelligent platform.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button href="#waitlist" className="w-full sm:w-auto">Join early access</Button>
+            <Button href="/#waitlist" className="w-full sm:w-auto">Join early access</Button>
             <Button href="#product" variant="secondary" className="w-full sm:w-auto">Explore platform</Button>
           </div>
           <p className="mt-4 text-[11px] text-white/30">Built for complex finance teams. Designed for clarity.</p>

@@ -1,5 +1,55 @@
 # Sumryx landing page
 
+This is the marketing site for **life.sumryx.com**.
+
+## Pages
+
+The site is a client-side routed React app (`react-router-dom`), not a single
+long scroll. Routes live in `src/App.tsx`, shared chrome (nav, footer, theme)
+lives in `src/layout/SiteLayout.tsx`, and each route's content is in
+`src/pages/`:
+
+- `/` — Home (`HomePage.tsx`) — the full marketing scroll: hero, features, AI
+  copilot, consolidation, accounting firms, security, CTA.
+- `/product` — Product (`ProductPage.tsx`) — scaffolded with six pillar cards;
+  expand each into its own detailed section as the product story develops.
+- `/pricing` — Pricing (`PricingPage.tsx`) — the three plan brackets
+  (Starter / Growth / Firms & Enterprise) with their feature sets already
+  filled in. Prices are placeholders (`TBD`) — fill in real numbers in the
+  `tiers` array once pricing is finalised.
+- `/about` — About (`AboutPage.tsx`) — scaffolded, needs company content.
+- `/resources` — Resources (`ResourcesPage.tsx`) — scaffolded, needs blog/docs
+  content.
+- `*` — 404 (`NotFoundPage.tsx`).
+
+Add a new page by creating a component in `src/pages/`, adding a `<Route>` in
+`src/App.tsx`, and linking to it from `src/components/Navigation.tsx` and/or
+`src/components/Footer.tsx`.
+
+The "Join early access" / "Register interest" buttons across the site link to
+`/#waitlist`, which lands on the lead-capture form in the `CTA` section on the
+Home page (`ScrollManager` in `src/layout/ScrollManager.tsx` handles smooth
+scrolling to hash targets on route change, including from another page).
+
+## Deploying to Cloudflare Pages
+
+This is a static Vite build, so it deploys to Cloudflare Pages like any other
+static site:
+
+1. In the Cloudflare dashboard, create a Pages project connected to this
+   GitHub repo.
+2. Build command: `npm run build`. Build output directory: `dist`.
+3. `public/_redirects` (`/* /index.html 200`) is already in place so
+   client-side routes (e.g. `/pricing`) resolve correctly instead of 404ing
+   on a hard refresh.
+4. Add `life.sumryx.com` as a custom domain on the Pages project once you're
+   ready to point the subdomain at it.
+5. If you want the lead-capture forms to work without an external CRM
+   endpoint, either set `VITE_LEAD_CAPTURE_ENDPOINT` to a real endpoint (see
+   below) or add a Cloudflare Pages Function at `functions/api/leads.ts` to
+   handle `/api/leads` directly — not set up yet, since the backend approach
+   hasn't been decided.
+
 ## Lead capture
 
 The launch-interest and newsletter forms send JSON `POST` requests to the endpoint
