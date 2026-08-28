@@ -131,6 +131,7 @@ html[data-theme="light"] [class*="bg-[#0a131c]"],
 html[data-theme="light"] [class*="bg-[#0a151e]"],
 html[data-theme="light"] [class*="bg-[#0a171d]"],
 html[data-theme="light"] [class*="bg-[#0b1720]"],
+html[data-theme="light"] [class*="bg-[#0b1a17]"],
 html[data-theme="light"] [class*="bg-[#0c171f]"],
 html[data-theme="light"] [class*="bg-[#101a23]"] {
   background-color: #ffffff !important;
