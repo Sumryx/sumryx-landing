@@ -1,0 +1,11 @@
+name = "sumryx-landing"
+compatibility_date = "2026-08-01"
+pages_build_output_dir = "dist"
+
+# Created via `npx wrangler d1 create sumryx-leads` — replace database_id
+# with the id it prints, and mirror this binding under the Cloudflare Pages
+# project's Settings -> Functions -> D1 database bindings (name it "DB").
+[[d1_databases]]
+binding = "DB"
+database_name = "sumryx-leads"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"

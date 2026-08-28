@@ -2,14 +2,6 @@
 
 This is the marketing site for **life.sumryx.com**.
 
-> **First checkout on this branch:** `package.json` now depends on
-> `react-router-dom`, but `package-lock.json` wasn't updated in this push
-> (it's a large generated file the tooling used for this change couldn't
-> safely edit). Run `npm install` once locally to refresh the lockfile and
-> commit it — otherwise `npm ci` will fail with an out-of-sync lockfile
-> error. `npm install`/`npm run dev`/`npm run build` all work fine in the
-> meantime since they don't require the lockfile to be in sync.
-
 ## Pages
 
 The site is a client-side routed React app (`react-router-dom`), not a single
@@ -52,22 +44,13 @@ static site:
    on a hard refresh.
 4. Add `life.sumryx.com` as a custom domain on the Pages project once you're
    ready to point the subdomain at it.
-5. If you want the lead-capture forms to work without an external CRM
-   endpoint, either set `VITE_LEAD_CAPTURE_ENDPOINT` to a real endpoint (see
-   below) or add a Cloudflare Pages Function at `functions/api/leads.ts` to
-   handle `/api/leads` directly — not set up yet, since the backend approach
-   hasn't been decided.
+5. Set up the D1 database for lead capture (see below) before or after the
+   first deploy — the Function returns a 500 until the `DB` binding exists,
+   but the rest of the site works fine regardless.
 
-## Lead capture
+## Lead capture (Cloudflare Pages Function + D1)
 
-The launch-interest and newsletter forms send JSON `POST` requests to the endpoint
-configured in `.env`:
-
-```bash
-VITE_LEAD_CAPTURE_ENDPOINT=https://example.com/api/leads
-```
-
-Each request contains:
+The launch-interest and newsletter forms `POST` JSON to `/api/leads`:
 
 ```json
 {
@@ -78,9 +61,50 @@ Each request contains:
 }
 ```
 
-Copy `.env.example` to `.env` and connect the endpoint to your CRM, mailing-list
-provider, or serverless function. Without this variable the forms submit to
-`/api/leads`, ready for a same-origin API route.
+That endpoint is handled by `functions/api/leads.ts`, a Cloudflare Pages
+Function that validates the payload and writes to a D1 database (binding
+name `DB`, table `leads`, schema in `migrations/0001_create_leads.sql`).
+Security/abuse measures already in the Function:
+
+- Strict server-side validation of `email` (regex + length) and `intent`
+  (must be `launch-interest` or `newsletter`) — the client's `submittedAt`
+  is never trusted, the server's own clock is used instead.
+- Per-IP rate limiting (max 8 submissions per 10 minutes, via `CF-Connecting-IP`).
+- `UNIQUE (email, intent)` in the schema, so re-submitting the same email
+  just refreshes the timestamp instead of creating duplicate rows.
+- Only `POST` is accepted; every other method gets `405`.
+
+**One-time setup:**
+
+1. `npx wrangler d1 create sumryx-leads` — copy the `database_id` it prints
+   into `wrangler.toml`.
+2. Apply the schema:
+   ```bash
+   npx wrangler d1 execute sumryx-leads --remote --file=./migrations/0001_create_leads.sql
+   ```
+3. In the Cloudflare Pages project dashboard: **Settings → Functions → D1
+   database bindings** → add a binding named `DB` pointing at `sumryx-leads`.
+   (`wrangler.toml`'s `[[d1_databases]]` block covers `wrangler pages`-based
+   local dev/deploys; the dashboard binding is what the Git-integration
+   deploy actually uses in production.)
+4. Redeploy (or trigger a new build) so the Function picks up the binding.
+
+**Local testing:** `npm run build && npx wrangler pages dev dist` serves the
+built site with Functions active against a local D1 (add `--local` to
+`wrangler d1 execute` for the same schema against that local copy).
+
+**Viewing leads:**
+```bash
+npx wrangler d1 execute sumryx-leads --remote --command="SELECT * FROM leads ORDER BY created_at DESC LIMIT 50"
+```
+
+**Not done yet, worth adding before real traffic:** a CAPTCHA
+(Cloudflare Turnstile) on the forms for stronger bot resistance than the
+rate limit alone provides.
+
+**Alternative:** to point the forms at an external CRM/ESP instead of D1,
+set `VITE_LEAD_CAPTURE_ENDPOINT` in `.env` (copy from `.env.example`) to
+that service's endpoint — this bypasses `/api/leads` entirely.
 
 ## Development
 
