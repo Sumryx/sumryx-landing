@@ -2,6 +2,14 @@
 
 This is the marketing site for **life.sumryx.com**.
 
+> **First checkout on this branch:** `package.json` now depends on
+> `react-router-dom`, but `package-lock.json` wasn't updated in this push
+> (it's a large generated file the tooling used for this change couldn't
+> safely edit). Run `npm install` once locally to refresh the lockfile and
+> commit it — otherwise `npm ci` will fail with an out-of-sync lockfile
+> error. `npm install`/`npm run dev`/`npm run build` all work fine in the
+> meantime since they don't require the lockfile to be in sync.
+
 ## Pages
 
 The site is a client-side routed React app (`react-router-dom`), not a single
