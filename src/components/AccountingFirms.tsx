@@ -20,7 +20,7 @@ export function AccountingFirms() {
               description="Standardise delivery, automate reporting, and give your team a live view across every client close."
             />
             <Reveal delay={0.1} className="mt-8">
-              <Button href="#waitlist" variant="secondary">Register firm interest</Button>
+              <Button href="/#waitlist" variant="secondary">Register firm interest</Button>
             </Reveal>
           </div>
 

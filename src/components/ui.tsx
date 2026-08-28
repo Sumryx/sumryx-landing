@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export function Container({
   className = '',
@@ -71,12 +72,14 @@ export function SectionHeading({
   )
 }
 
-type ButtonProps = ComponentProps<'a'> & {
+type ButtonProps = Omit<ComponentProps<'a'>, 'href'> & {
+  href: string
   variant?: 'primary' | 'secondary' | 'ghost'
 }
 
 export function Button({
   children,
+  href,
   variant = 'primary',
   className = '',
   ...props
@@ -89,23 +92,35 @@ export function Button({
     ghost: 'text-white/65 hover:text-white',
   }
 
-  return (
-    <a
-      className={`group inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071018] ${styles[variant]} ${className}`}
-      {...props}
-    >
+  const classes = `group inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071018] ${styles[variant]} ${className}`
+  const content = (
+    <>
       {children}
       {variant !== 'ghost' && (
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
       )}
+    </>
+  )
+
+  if (href.startsWith('/')) {
+    return (
+      <Link to={href} className={classes} {...props}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <a href={href} className={classes} {...props}>
+      {content}
     </a>
   )
 }
 
 export function SumryxMark({ compact = false }: { compact?: boolean }) {
   return (
-    <a
-      href="#"
+    <Link
+      to="/"
       className={`sumryx-logo relative block overflow-hidden ${compact ? 'h-7 w-8' : 'h-[26px] w-[148px]'}`}
       aria-label="Sumryx home"
     >
@@ -119,7 +134,39 @@ export function SumryxMark({ compact = false }: { compact?: boolean }) {
         alt=""
         className="logo-for-light absolute left-0 top-0 hidden h-full max-w-none object-contain object-left"
       />
-    </a>
+    </Link>
+  )
+}
+
+export function PageHeader({
+  label,
+  title,
+  description,
+  actions,
+}: {
+  label: string
+  title: string
+  description: string
+  actions?: ReactNode
+}) {
+  return (
+    <section className="grid-surface relative overflow-hidden pb-16 pt-32 sm:pt-40 md:pb-20">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal-400/30 to-transparent" />
+      <Container>
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <div className="flex justify-center">
+            <SectionLabel>{label}</SectionLabel>
+          </div>
+          <h1 className="display-text text-balance text-4xl font-semibold leading-[1.05] text-white sm:text-6xl">
+            {title}
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-balance text-base leading-7 text-white/60 sm:text-lg">
+            {description}
+          </p>
+          {actions && <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">{actions}</div>}
+        </Reveal>
+      </Container>
+    </section>
   )
 }
 

@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, Menu, Moon, Sun, X } from 'lucide-react'
+import { Menu, Moon, Sun, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Button, Container, SumryxMark } from './ui'
 
 const links = [
-  { label: 'Product', dropdown: true },
-  { label: 'Solutions', dropdown: true },
-  { label: 'Pricing' },
-  { label: 'Resources', dropdown: true },
+  { label: 'Product', to: '/product' },
+  { label: 'Pricing', to: '/pricing' },
+  { label: 'About', to: '/about' },
+  { label: 'Resources', to: '/resources' },
 ]
 
 export function Navigation({
@@ -26,14 +27,13 @@ export function Navigation({
 
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary navigation">
           {links.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={`#${link.label.toLowerCase()}`}
+              to={link.to}
               className="flex items-center gap-1 text-[13px] font-medium text-white/60 transition-colors hover:text-white"
             >
               {link.label}
-              {link.dropdown && <ChevronDown className="h-3 w-3" aria-hidden="true" />}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -47,10 +47,10 @@ export function Navigation({
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <Button href="#waitlist" variant="ghost" className="px-3">
+          <Button href="/#waitlist" variant="ghost" className="px-3">
             Register interest
           </Button>
-          <Button href="#waitlist" className="h-9 px-4">
+          <Button href="/#waitlist" className="h-9 px-4">
             Join early access
           </Button>
         </div>
@@ -86,21 +86,20 @@ export function Navigation({
           >
             <Container className="flex flex-col gap-1 py-4">
               {links.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={`#${link.label.toLowerCase()}`}
+                  to={link.to}
                   onClick={() => setOpen(false)}
                   className="flex items-center justify-between rounded-lg px-3 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-white"
                 >
                   {link.label}
-                  {link.dropdown && <ChevronDown className="h-4 w-4" />}
-                </a>
+                </Link>
               ))}
               <div className="mt-3 grid grid-cols-2 gap-3 border-t border-white/10 pt-4">
-                <Button href="#waitlist" variant="secondary">
+                <Button href="/#waitlist" variant="secondary">
                   Register interest
                 </Button>
-                <Button href="#waitlist">Join early access</Button>
+                <Button href="/#waitlist">Join early access</Button>
               </div>
             </Container>
           </motion.div>

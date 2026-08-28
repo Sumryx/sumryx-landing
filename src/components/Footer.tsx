@@ -1,11 +1,42 @@
+import { Link } from 'react-router-dom'
 import { LeadForm } from './LeadForm'
 import { Container, SumryxMark } from './ui'
 
-const columns = [
-  { title: 'Product', links: ['Consolidation', 'AI reporting', 'Forecasting', 'Workflows', 'Integrations'] },
-  { title: 'Solutions', links: ['Multi-entity groups', 'Accounting firms', 'CFOs', 'Finance teams'] },
-  { title: 'Company', links: ['About', 'Careers', 'Security', 'Contact'] },
-  { title: 'Resources', links: ['Finance OS guide', 'Blog', 'Help centre', 'API docs'] },
+// Links without a `to` don't have a dedicated page yet — they stay as
+// placeholder anchors until that content exists.
+const columns: { title: string; links: { label: string; to?: string }[] }[] = [
+  {
+    title: 'Product',
+    links: [
+      { label: 'Consolidation', to: '/product' },
+      { label: 'AI reporting', to: '/product' },
+      { label: 'Forecasting', to: '/product' },
+      { label: 'Workflows', to: '/product' },
+      { label: 'Integrations', to: '/product' },
+    ],
+  },
+  {
+    title: 'Solutions',
+    links: [
+      { label: 'Multi-entity groups', to: '/product' },
+      { label: 'Accounting firms', to: '/product' },
+      { label: 'CFOs' },
+      { label: 'Finance teams' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [{ label: 'About', to: '/about' }, { label: 'Careers' }, { label: 'Security' }, { label: 'Contact' }],
+  },
+  {
+    title: 'Resources',
+    links: [
+      { label: 'Finance OS guide' },
+      { label: 'Blog', to: '/resources' },
+      { label: 'Help centre' },
+      { label: 'API docs' },
+    ],
+  },
 ]
 
 export function Footer() {
@@ -22,9 +53,21 @@ export function Footer() {
               <div key={column.title}>
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/35">{column.title}</h3>
                 <ul className="mt-5 space-y-3.5">
-                  {column.links.map((link) => (
-                    <li key={link}><a href="#" className="text-[12px] text-white/42 transition-colors hover:text-white">{link}</a></li>
-                  ))}
+                  {column.links.map((link) =>
+                    link.to ? (
+                      <li key={link.label}>
+                        <Link to={link.to} className="text-[12px] text-white/42 transition-colors hover:text-white">
+                          {link.label}
+                        </Link>
+                      </li>
+                    ) : (
+                      <li key={link.label}>
+                        <a href="#" className="text-[12px] text-white/42 transition-colors hover:text-white">
+                          {link.label}
+                        </a>
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             ))}
